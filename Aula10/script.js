@@ -12,7 +12,7 @@ utilizando-as nos diferentes métodos que iremos criar para os botões do nosso 
 async function request(url, options = {}) {
 
     const res = await fetch(url, {
-        hearders: {
+        headers: {
             'Content-Type': 'application/json', // Indica o tipo de dados que deverá ser enviado do lado do servidor, neste caso dados no formato JSON
         },
         ...options // Outras opções que poderão ser enviadas no pedido à API
@@ -67,9 +67,44 @@ getItemsButton.addEventListener('click', async () => {
     // Chamada da função 'getAllItems' que nos retorna os items todos em formato JSON
     // Necessário o await porque é nos enviada um objeto 'Promise' e só podemos continuar a nossa lógica quando temos os dados completos
     const items = await getAllItems();
-    // Com a infromação que obtemos da nossa API, chamamos a função renderItems, para que a informação fique visível no ecrã
+    // Com a informação que obtemos da nossa API, chamamos a função renderItems, para que a informação fique visível no ecrã
     renderItems(items);
 })
 
 /* FIM GET - Comportamento do botão Load Items */
 
+/* INÍCIO POST - Comportamento do botão Add Item */
+
+// Função que faz um pedido do tipo POST à nossa API, cujo objetivo é adicionar um novo item    
+
+async function createItem(name) {
+    return request(API_BASE_URL, {
+        method: 'POST', // Indicamos que o método do pedido é do tipo POST
+        body: JSON.stringify({ name }) // Indicamos o corpo do pedido, ou seja, a informação que queremos enviar para a API, neste caso um objeto JSON com o nome do item
+    });
+
+}
+
+let addItemButton = document.getElementById('addItemBtn'); // Vamos buscar o botão 'Add Item' através do ID, este ID pode ser visto no ficheiro index.html
+
+// Atribuição de comportamento ao botão 'Add Item' no momento em que existe um click sobre o mesmo 
+addItemButton.addEventListener('click', async () => {
+    let nameInput = document.getElementById('newItemName').value.trim (); // Vamos buscar o input onde o utilizador escreve o nome do item a adicionar
+    if (!nameInput) { // Verificamos se o nome do item não está vazio
+        console.log('Please enter a name'); // Caso esteja vazio, escrevemos uma mensagem na consola do navegador
+            return; // E saímos da função
+    }
+
+    try {
+
+        let created = await createItem(nameInput); // Chamamos a função createItem que faz o pedido à API para adicionar o novo item
+        console.log('Item added:', created); // Escrevemos na consola do navegador a mensagem de sucesso, juntamente com o item que foi adicionado
+        let items = await getAllItems(); // Após adicionar o novo item, fazemos um pedido à API para obter a lista atualizada de items
+        renderItems(items); // Atualizamos a lista de items no ecrã
+        document.getElementById('newItemName').value = ''; // Limpamos o input onde o utilizador escreveu o nome do item, para ficar vazio novamente
+
+
+    } catch (error) {
+       console.log('Error adding item:', error); // Caso ocorra algum erro durante o processo, escrevemos a mensagem de erro na consola do navegador
+    }
+});
