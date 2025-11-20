@@ -89,10 +89,10 @@ let addItemButton = document.getElementById('addItemBtn'); // Vamos buscar o bot
 
 // Atribuição de comportamento ao botão 'Add Item' no momento em que existe um click sobre o mesmo 
 addItemButton.addEventListener('click', async () => {
-    let nameInput = document.getElementById('newItemName').value.trim (); // Vamos buscar o input onde o utilizador escreve o nome do item a adicionar
+    let nameInput = document.getElementById('newItemName').value.trim(); // Vamos buscar o input onde o utilizador escreve o nome do item a adicionar
     if (!nameInput) { // Verificamos se o nome do item não está vazio
         console.log('Please enter a name'); // Caso esteja vazio, escrevemos uma mensagem na consola do navegador
-            return; // E saímos da função
+        return; // E saímos da função
     }
 
     try {
@@ -105,6 +105,94 @@ addItemButton.addEventListener('click', async () => {
 
 
     } catch (error) {
-       console.log('Error adding item:', error); // Caso ocorra algum erro durante o processo, escrevemos a mensagem de erro na consola do navegador
+        console.log('Error adding item:', error); // Caso ocorra algum erro durante o processo, escrevemos a mensagem de erro na consola do navegador
     }
 });
+
+/* FIM POST - Comportamento do botão Add Item */
+
+/* INÍCIO DELETE - Comportamento do botão Delete All Items */
+
+// Função que faz um pedido do tipo UPDATE à nossa API, cujo objetivo é eliminar todos os items existentes 
+
+let updateButton = document.getElementById('updateItemBtn'); // Vamos buscar o botão 'Update Item' através do ID, este ID pode ser visto no ficheiro index.html
+
+async function updateItem(id, newName) {
+    return request(`${API_BASE_URL}/${id}`, {
+        method: 'PUT', // Indicamos que o método do pedido é do tipo PUT
+        body: JSON.stringify({ name: newName }) // Indicamos o corpo do pedido, ou seja, a informação que queremos enviar para a API, neste caso um objeto JSON com o novo nome do item
+    });
+}
+
+// Atribuição de comportamento ao botão 'Update Item' no momento em que existe um click sobre o mesmo
+
+updateButton.addEventListener('click', async () => {
+
+    let id = document.getElementById('itemIdInput').value; // Vamos buscar o input onde o utilizador escreve o id do item a atualizar
+
+    if (!id || id <= 0) { // Verificamos se o id do item não está vazio
+        console.log('Please enter an ID válido'); // Caso esteja vazio, escrevemos uma mensagem na consola do navegador
+        return; // E saímos da função
+    }
+
+    let newName = prompt('Enter a new NameInput'); // Vamos buscar o input onde o utilizador escreve o novo nome do item a atualizar
+
+    if (!newName || !newName.trim()) { // Verificamos se o novo nome do item não está vazio
+        console.log('Please enter a valid name'); // Caso esteja vazio, escrevemos uma mensagem na consola do navegador
+        return; // E saímos da função
+    }
+
+    try {
+
+        let updatedItem = await updateItem(id, newName); // Chamamos a função updateItem que faz o pedido à API para atualizar o item
+        console.log('Item updated:', updatedItem);
+        let items = await getAllItems(); // Após atualizar o item, fazemos um pedido à API para obter a lista atualizada de items
+        renderItems(items); // Atualizamos a lista de items no ecrã
+        document.getElementById('itemIdInput').value = ''; // Limpamos o input onde o utilizador escreveu o id do item, para ficar vazio novamente
+
+
+
+    } catch (error) {
+        console.log('Error updating item:', error); // Caso ocorra algum erro durante o processo, escrevemos a mensagem de erro na consola do navegador
+    }
+
+})
+
+/* FIM DELETE - Comportamento do botão Delete All Items */
+
+/* INÍCIO DELETE - Comportamento do botão Delete All Items */
+
+// Função que faz um pedido do tipo DELETE à nossa API, cujo objetivo é eliminar todos os items existentes  
+
+// Função para apagar um item (FALTAVA NO TEU CÓDIGO)
+async function deleteItem(id) {
+    return request(`${API_BASE_URL}/${id}`, {
+        method: 'DELETE'
+    });
+}
+
+let deleteButton = document.getElementById('deleteItemBtn'); // Botão "Delete Item"
+
+// Evento do botão
+deleteButton.addEventListener('click', async () => {
+
+    let id = document.getElementById('itemIdInput').value; 
+
+    // Validar ID
+    if (!id || id <= 0) {
+        console.log('Please enter a valid ID');
+        return;
+    }
+
+    try {
+        let deletedItem = await deleteItem(id);
+        console.log('Item deleted:', deletedItem);
+
+        let items = await getAllItems(); 
+        renderItems(items); 
+
+    } catch (error) {
+        console.log('Error deleting item:', error);
+    }
+});
+/* FIM DELETE - Comportamento do botão Delete All Items */
