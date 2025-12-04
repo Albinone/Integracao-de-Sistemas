@@ -1,0 +1,20 @@
+class Logger {
+
+    constructor(name) {
+        this.name = name
+    }
+
+    log(message) {
+        console.log(`[${this.name}] ${message}`)
+    }
+
+    error(message) {
+
+    console.error(`[${this.name}] ${message}`)
+
+}  
+
+}
+
+module.exports = Logger
+
